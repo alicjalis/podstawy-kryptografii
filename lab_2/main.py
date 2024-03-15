@@ -1,16 +1,24 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import sympy
+import random
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def generate_prime():
+    prime = sympy.randprime(1000, 9999)
+    return prime
 
+def generate_key():
+    p = generate_prime()
+    q = generate_prime()
+    n = p*q
+    phi = (p-1)(q-1)
+    e = generate_prime()
+    while sympy.gcd(e, phi) != 1:
+        e = generate_prime()
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    d = random.randint(100,9999)
+    while (e*d-1) % phi != 0:
+        d = random.randint(100,9999)
+        return p,q,n,d
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+def encrypt_public():
+    pass
