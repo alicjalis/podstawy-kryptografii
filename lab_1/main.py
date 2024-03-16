@@ -2,7 +2,7 @@ import sympy
 import random
 
 def generate_prime(mod):
-    prime = sympy.randprime(1000, 9999)  # 4-cyfrowe liczby
+    prime = sympy.randprime(1000, 9999)
     while prime % 4 != mod:
         prime = sympy.randprime(1000, 9999)
     return prime
@@ -27,11 +27,11 @@ def generate_bbs_sequence(num_bits):
         x_next = pow(values[-1], 2, N)
         values.append(x_next)
         if (x_next % 2 == 0):
-            sequence.append(0)
+            sequence.append('0')
         else:
-            sequence.append(1)
+            sequence.append('1')
 
-    return sequence
+    return ''.join(sequence)
 
 
 
