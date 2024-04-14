@@ -17,6 +17,6 @@ if __name__ == "__main__":
     input_data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     result = bit_change_test(input_data)
     if result:
-        print("SHA-256 spełnia kryterium SAC - zmiana pojedynczego bitu na wejściu powoduje zmianę wszystkich bitów wyjściowych z prawdopodobieństwem 0.5.")
+        print("SHA-256 spełnia kryterium SAC")
     else:
-        print("SHA-256 nie spełnia kryterium SAC - zmiana pojedynczego bitu na wejściu nie powoduje zmiany wszystkich bitów wyjściowych z prawdopodobieństwem 0.5.")
+        print("SHA-256 nie spełnia kryterium SAC")
