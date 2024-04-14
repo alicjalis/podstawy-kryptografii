@@ -1,34 +1,45 @@
 import hashlib
+import timeit
 
-def generate_hashes(input_text):
+
+def compare_hashes(input_text):
     results = {}
-
-    # MD5
-    md5_hash = hashlib.md5()
-    md5_hash.update(input_text.encode())
-    results['MD5'] = md5_hash.hexdigest()
-
-    # SHA-1
-    sha1_hash = hashlib.sha1()
-    sha1_hash.update(input_text.encode())
-    results['SHA-1'] = sha1_hash.hexdigest()
-
-    # SHA-2 variants (SHA-224, SHA-256, SHA-384, SHA-512)
-    sha2_variants = ['sha224', 'sha256', 'sha384', 'sha512']
-    for variant in sha2_variants:
-        sha2_hash = hashlib.new(variant)
-        sha2_hash.update(input_text.encode())
-        results[variant.upper()] = sha2_hash.hexdigest()
-
+    algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
+    for algorithm in algorithms:
+        setup_code = f'''
+from hashlib import {algorithm}
+input_text = "{input_text}"
+        '''
+        execution_time = timeit.timeit(f'{algorithm}(input_text.encode()).hexdigest()', setup=setup_code, number=100000)
+        hash_result = getattr(hashlib, algorithm)(input_text.encode()).hexdigest()
+        results[algorithm.upper()] = {'hash': hash_result, 'length': len(hash_result), 'time': execution_time}
     return results
 
-def main():
-    input_text = input("Podaj tekst do zaszyfrowania: ")
-    hashes = generate_hashes(input_text)
-
-    print("\nWartości skrótów:")
-    for algorithm, value in hashes.items():
-        print(f"{algorithm}: {value}")
 
 if __name__ == "__main__":
-    main()
+    input_data = [
+        "Lorem",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis. Fusce non urna quis nisi commodo sollicitudin",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis. Fusce non urna quis nisi commodo sollicitudin. Donec convallis nisl vel est suscipit, nec pulvinar dui gravida Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis. Fusce non urna quis nisi commodo sollicitudin. Donec convallis nisl vel est suscipit, nec pulvinar dui gravida."
+    ]
+
+    overall_results = {algorithm: 0 for algorithm in ['MD5', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512']}
+
+    for data in input_data:
+        print(f"Data Length: {len(data)}")
+        results = compare_hashes(data)
+        sorted_results = sorted(results.items(), key=lambda x: x[1]['time'])
+        print("Results for current text:")
+        for algorithm, result in sorted_results:
+            print(f"{algorithm}: Length - {result['length']}, Time - {result['time']}, Hash - {result['hash']}")
+        print("\n")
+        for algorithm, result in results.items():
+            overall_results[algorithm] += result['time']
+
+    sorted_overall_results = sorted(overall_results.items(), key=lambda x: x[1])
+
+    print("Overall ranking based on total time:")
+    for algorithm, total_time in sorted_overall_results:
+        print(f"{algorithm}: Total Time - {total_time}")
