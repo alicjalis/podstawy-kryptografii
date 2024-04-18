@@ -1,45 +1,44 @@
 import hashlib
-import timeit
+import time
 
+def compare_hashes(file_path, algorithm, num_measurements=100):
+    total_elapsed_time = 0
+    for _ in range(num_measurements):
+        start_time = time.time()
+        with open(file_path, 'rb') as file:
+            file_content = file.read()
+            if algorithm == 'md5':
+                hash_value = hashlib.md5(file_content).hexdigest()
+            elif algorithm == 'sha1':
+                hash_value = hashlib.sha1(file_content).hexdigest()
+            elif algorithm == 'sha224':
+                hash_value = hashlib.sha224(file_content).hexdigest()
+            elif algorithm == 'sha256':
+                hash_value = hashlib.sha256(file_content).hexdigest()
+            elif algorithm == 'sha384':
+                hash_value = hashlib.sha384(file_content).hexdigest()
+            elif algorithm == 'sha512':
+                hash_value = hashlib.sha512(file_content).hexdigest()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        total_elapsed_time += elapsed_time
+    average_elapsed_time = total_elapsed_time / num_measurements
+    return hash_value, average_elapsed_time
 
-def compare_hashes(input_text):
-    results = {}
-    algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
+file_paths = ["text_1MB.txt", "text_3MB.txt", "text_10MB.txt"]
+algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512']
+num_measurements = 5
+
+total_times = {algorithm: 0 for algorithm in algorithms}
+
+for file_path in file_paths:
+    print(f"Testing for file: {file_path}")
     for algorithm in algorithms:
-        setup_code = f'''
-from hashlib import {algorithm}
-input_text = "{input_text}"
-        '''
-        execution_time = timeit.timeit(f'{algorithm}(input_text.encode()).hexdigest()', setup=setup_code, number=100000)
-        hash_result = getattr(hashlib, algorithm)(input_text.encode()).hexdigest()
-        results[algorithm.upper()] = {'hash': hash_result, 'length': len(hash_result), 'time': execution_time}
-    return results
+        _, average_elapsed_time = compare_hashes(file_path, algorithm, num_measurements)
+        print(f"{algorithm}, Average Time: {average_elapsed_time:.6f} seconds")
+        total_times[algorithm] += average_elapsed_time
+    print()
 
-
-if __name__ == "__main__":
-    input_data = [
-        "Lorem",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis. Fusce non urna quis nisi commodo sollicitudin",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis. Fusce non urna quis nisi commodo sollicitudin. Donec convallis nisl vel est suscipit, nec pulvinar dui gravida Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis arcu a enim venenatis. Fusce non urna quis nisi commodo sollicitudin. Donec convallis nisl vel est suscipit, nec pulvinar dui gravida."
-    ]
-
-    overall_results = {algorithm: 0 for algorithm in ['MD5', 'SHA1', 'SHA224', 'SHA256', 'SHA384', 'SHA512']}
-
-    for data in input_data:
-        print(f"Data Length: {len(data)}")
-        results = compare_hashes(data)
-        sorted_results = sorted(results.items(), key=lambda x: x[1]['time'])
-        print("Results for current text:")
-        for algorithm, result in sorted_results:
-            print(f"{algorithm}: Length - {result['length']}, Time - {result['time']}, Hash - {result['hash']}")
-        print("\n")
-        for algorithm, result in results.items():
-            overall_results[algorithm] += result['time']
-
-    sorted_overall_results = sorted(overall_results.items(), key=lambda x: x[1])
-
-    print("Overall ranking based on total time:")
-    for algorithm, total_time in sorted_overall_results:
-        print(f"{algorithm}: Total Time - {total_time}")
+print("Total times for each algorithm:")
+for algorithm, total_time in total_times.items():
+    print(f"{algorithm}, Total Time: {total_time:.6f} seconds")
