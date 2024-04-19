@@ -14,7 +14,7 @@ def generate_bbs_sequence(num_bits):
     p = generate_prime(3)
     q = generate_prime(3)
     N = p * q
-
+# x i N są względnie pierwsze
     x = random.randint(2, N - 1)
     while not are_coprime(x, N):
         x = random.randint(2, N - 1)

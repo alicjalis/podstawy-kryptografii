@@ -7,8 +7,6 @@ def generate_prime():
     prime = sympy.randprime(100000000, 9999999999)
     return prime
 
-
-
 p = generate_prime()
 q = generate_prime()
 n = p * q
@@ -25,7 +23,7 @@ while (e < phi):
 
 k = 2
 d = sympy.mod_inverse(e,phi)
-
+# e, n  to klucz publiczny, d, n to klucz prywatny
 message = "Alicja"
 message = message.encode('utf-8')
 message = int.from_bytes(message, byteorder='big')
